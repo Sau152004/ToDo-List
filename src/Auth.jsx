@@ -6,12 +6,22 @@ import { LogOut, Mail } from 'lucide-react';
 export default function Auth({ user, setUser }) {
   const handleGoogleLogin = async () => {
     try {
+      console.log('🔐 Attempting Google login...');
       const result = await signInWithPopup(auth, googleProvider);
+      console.log('✅ Login successful:', result.user.email);
       setUser(result.user);
-      console.log('✅ Logged in:', result.user.email);
     } catch (error) {
-      console.error('❌ Login error:', error.message);
-      alert('Failed to login. Please try again.');
+      console.error('❌ Full error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      if (error.code === 'auth/cancelled-popup-request') {
+        alert('Popup was cancelled. Please try again. Make sure pop-ups are allowed.');
+      } else if (error.code === 'auth/popup-blocked') {
+        alert('Pop-up was blocked. Please allow pop-ups for this site.');
+      } else {
+        alert(`Login failed: ${error.message}`);
+      }
     }
   };
 
